@@ -1,0 +1,6 @@
+database:
+  user: postgres
+  pwd:  root
+  host: 127.0.0.1
+webserver:
+  port: 8002
