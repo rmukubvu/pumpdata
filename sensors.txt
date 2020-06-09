@@ -1,0 +1,14 @@
+1:magnetic_pickup
+2:namurs_single_pulse_pickup
+3:engine_water_temperature
+4:oil_temperature
+5:block_temperature
+6:oil_pressure
+7:fuel_level_primary
+8:fuel_level_backup
+9:water_tank_level
+10:low_engine_water_level
+11:amp_meter_battery_charger
+12:amp_meter_engine_cranking
+13:ac_volt_meter
+14:dc_volt_meter

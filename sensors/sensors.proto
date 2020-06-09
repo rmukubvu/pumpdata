@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package sensors;
+
+option go_package = "github.com/rmukubvu/pumpdata/sensors";
+
+service Sensor {
+    rpc SendSensorInformation (SensorRequest) returns (SensorResponse) {}
+}
+
+message SensorRequest {
+     string sensorName = 1;
+     string serialNumber = 2;
+     string value = 3;
+}
+
+message SensorResponse {
+     string message = 1;
+}

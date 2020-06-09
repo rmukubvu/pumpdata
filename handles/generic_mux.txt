@@ -15,7 +15,8 @@ func InitRouter() *mux.Router {
 	r := mux.NewRouter()
 	api := r.PathPrefix("/api/v1/pumps").Subrouter()
 	api.HandleFunc("/pump-types", getPumpTypes).Methods(http.MethodGet)
-	/*api.HandleFunc("/location/{id}", search).Methods(http.MethodGet)*/
+	api.HandleFunc("/pump-types", postPumpTypes).Methods(http.MethodPost)
+	api.HandleFunc("/pump", postPump).Methods(http.MethodPost)
 	return r
 }
 

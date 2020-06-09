@@ -9,3 +9,4 @@ system:
       url: postgresql://%s:%s@%s:%d/%s?sslmode=disable
 webserver:
   port: 8002
+

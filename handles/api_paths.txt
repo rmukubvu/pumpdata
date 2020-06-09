@@ -1,0 +1,76 @@
+package handles
+
+import (
+	"encoding/json"
+	"github.com/rmukubvu/pumpdata/model"
+	"github.com/rmukubvu/pumpdata/store"
+	"io/ioutil"
+	"net/http"
+)
+
+
+func postPump(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	p := model.Pump{}
+	reqBody, _ := ioutil.ReadAll(req.Body)
+	//check if its a valid json string
+	if ok := validJson(string(reqBody)); !ok {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(generateErrorMessage("invalid json string"))
+		return
+	}
+	err := p.FromJson(reqBody)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(generateErrorMessage("malformed input data"))
+		return
+	}
+	err = store.AddPump(p)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(generateErrorMessage(err.Error()))
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(p)
+}
+
+
+func postPumpTypes(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	p := model.PumpTypes{}
+	reqBody, _ := ioutil.ReadAll(req.Body)
+	//check if its a valid json string
+	if ok := validJson(string(reqBody)); !ok {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(generateErrorMessage("invalid json string"))
+		return
+	}
+	err := p.FromJson(reqBody)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(generateErrorMessage("malformed input data"))
+		return
+	}
+	err = store.AddPumpType(p)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(generateErrorMessage(err.Error()))
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(p)
+}
+
+
+func getPumpTypes(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	res, err := store.FetchPumpTypes()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(generateErrorMessage(err.Error())))
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(res)
+}
