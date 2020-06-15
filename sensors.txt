@@ -12,3 +12,4 @@
 12:amp_meter_engine_cranking
 13:ac_volt_meter
 14:dc_volt_meter
+15:cooling_raw_water_temperature

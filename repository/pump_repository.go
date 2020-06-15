@@ -38,9 +38,7 @@ func AddSensor(p model.Sensor) error {
 }
 
 func GetCompanyById(id int) (model.Company, error) {
-	p := model.Company{
-		CompanyId: id,
-	}
+	p := model.Company{CompanyId: id}
 	item, err := cacheService.Get(p.Key())
 	if err != nil {
 		return store.CompanyById(id)
@@ -50,10 +48,7 @@ func GetCompanyById(id int) (model.Company, error) {
 }
 
 func SensorByTypeAndId(typeId, pumpId int) (model.Sensor, error) {
-	p := model.Sensor{
-		TypeId: typeId,
-		PumpId: pumpId,
-	}
+	p := model.Sensor{TypeId: typeId, PumpId: pumpId}
 	item, err := cacheService.Get(p.Key())
 	if err != nil {
 		return store.SensorByTypeAndId(p)
@@ -63,9 +58,7 @@ func SensorByTypeAndId(typeId, pumpId int) (model.Sensor, error) {
 }
 
 func GetPumpBySerialNumber(serialNumber string) (model.Pump, error) {
-	p := model.Pump{
-		SerialNumber: serialNumber,
-	}
+	p := model.Pump{SerialNumber: serialNumber}
 	item, err := cacheService.Get(p.Key())
 	if err != nil {
 		p, err = store.GetPumpBySerialNumber(serialNumber)

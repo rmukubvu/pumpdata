@@ -44,10 +44,11 @@ func GetSensorTypes() ([]model.SensorTypes, error) {
 }
 
 func getSensor(s string) (int, error) {
-	id := sensorMapFlipped[s]
+	ss := strings.ReplaceAll(s, " ", "_")
+	id := sensorMapFlipped[ss]
 	if id == 0 {
 		//its new add to collection and return new id
-		return addNewSensor(s), sensorConfigured
+		return addNewSensor(ss), sensorConfigured
 	}
 	return id, nil
 }
@@ -73,10 +74,9 @@ func readFileLineAndMap() {
 }
 
 func addNewSensor(s string) int {
-	ss := strings.ReplaceAll(s, " ", "_")
-	update(ss)
+	update(s)
 	//flush them to file
-	line := fmt.Sprintf("%d:%s\n", lastId, ss)
+	line := fmt.Sprintf("\n%d:%s", lastId, s)
 	appendToFile(line)
 	return lastId
 }

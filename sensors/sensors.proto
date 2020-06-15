@@ -6,6 +6,7 @@ option go_package = "github.com/rmukubvu/pumpdata/sensors";
 
 service Sensor {
     rpc SendSensorInformation (SensorRequest) returns (SensorResponse) {}
+    rpc Ping (PingRequest) returns (PingResponse);
 }
 
 message SensorRequest {
@@ -16,4 +17,12 @@ message SensorRequest {
 
 message SensorResponse {
      string message = 1;
+}
+
+message PingRequest {
+    string data = 1;
+}
+
+message PingResponse {
+    string data = 1;
 }
