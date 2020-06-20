@@ -34,7 +34,16 @@ func AddSensor(p model.Sensor) error {
 
 func SensorByTypeAndId(v model.Sensor) (model.Sensor, error) {
 	p := model.Sensor{}
-	err := db.Get(&p, model.SelectSensorWithId, v.TypeId, v.PumpId)
+	err := db.Get(&p, model.SelectSensorByTypeAndPumpId, v.TypeId, v.PumpId)
+	if err != nil {
+		return p, err
+	}
+	return p, nil
+}
+
+func SensorByPumpId(v model.Sensor) (model.Sensor, error) {
+	p := model.Sensor{}
+	err := db.Get(&p, model.SelectSensorByTypeAndPumpId, v.TypeId, v.PumpId)
 	if err != nil {
 		return p, err
 	}
