@@ -7,7 +7,7 @@ import (
 
 var (
 	db    *sqlx.DB
-	cache = make(map[string]bool)
+	cache = make(map[int]string)
 )
 
 func init() {
@@ -22,6 +22,11 @@ func init() {
 func insert(sql string, arg map[string]interface{}) error {
 	_, err := db.NamedExec(sql, arg)
 	return err
+}
+
+func insertWithLastId(sql string, arg map[string]interface{}) (int64, error) {
+	rs, _ := db.NamedExec(sql, arg)
+	return rs.LastInsertId()
 }
 
 func panicOnError(err error) {

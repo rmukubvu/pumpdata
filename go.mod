@@ -12,6 +12,7 @@ require (
 	github.com/lib/pq v1.6.0
 	github.com/opentracing/opentracing-go v1.1.0 // indirect
 	github.com/spf13/viper v1.7.0
+	github.com/streadway/amqp v1.0.0
 	golang.org/x/net v0.0.0-20200114155413-6afb5195e5aa
 	google.golang.org/grpc v1.27.0
 	google.golang.org/protobuf v1.24.0

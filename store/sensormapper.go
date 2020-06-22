@@ -82,8 +82,10 @@ func addNewSensor(s string) int {
 }
 
 func appendToFile(line string) {
+	rw := 0644 // readwrite
+	perm := os.FileMode(rw)
 	f, err := os.OpenFile(sensorsFile,
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY, perm.Perm())
 	if err != nil {
 		log.Println(err)
 	}
@@ -102,6 +104,6 @@ func update(s string) {
 		Id:   id,
 		Name: s,
 	})
-	lastId = id //no thread safe
+	lastId = id
 	mu.Unlock()
 }

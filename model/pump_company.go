@@ -16,7 +16,7 @@ type Company struct {
 const (
 	InsertPumpCompany = `insert into pump_company (pump_id,company_id,created_date) 
 				  		 values (:pump_id,:company_id,:created_date)`
-	SelectPumpCompanyWithId = `select * from pump_company where company_id = $1`
+	SelectPumpCompanyWithPumpId = `select * from pump_company where pump_id = $1`
 )
 
 func (p *Company) ToJson() string {
@@ -33,7 +33,7 @@ func (p *Company) FromJson(body []byte) error {
 }
 
 func (p *Company) Key() string {
-	return fmt.Sprintf("pump.company-%d", p.CompanyId)
+	return fmt.Sprintf("pump.company-%d", p.PumpId)
 }
 
 func (p *Company) ToMap() map[string]interface{} {

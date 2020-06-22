@@ -1,0 +1,41 @@
+package repository
+
+import (
+	"github.com/rmukubvu/pumpdata/model"
+	"reflect"
+	"testing"
+)
+
+func TestGetPumpBySerialNumber(t *testing.T) {
+	type args struct {
+		serialNumber string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    model.Pump
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+		{name: "test1",args: struct{ serialNumber string }{serialNumber: "123456789"}, want: model.Pump {
+		Id: 1, TypeId: 1, SerialNumber: "123456789", NickName: "test", Lat: 0, Lng: 0, CreatedDate: 0} , wantErr: false},
+		{name: "test2",args: struct{ serialNumber string }{serialNumber: "135792468"}, want: model.Pump {
+		Id: 1, TypeId: 1, SerialNumber: "123456789", NickName: "test", Lat: 0, Lng: 0, CreatedDate: 0} , wantErr: false},
+		{name: "test3",args: struct{ serialNumber string }{serialNumber: "135792469"}, want: model.Pump {
+		Id: 1, TypeId: 1, SerialNumber: "123456789", NickName: "test", Lat: 0, Lng: 0, CreatedDate: 0} , wantErr: false},
+		{name: "test4",args: struct{ serialNumber string }{serialNumber: "135792470"}, want: model.Pump {
+		Id: 1, TypeId: 1, SerialNumber: "123456789", NickName: "test", Lat: 0, Lng: 0, CreatedDate: 0} , wantErr: false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := GetPumpBySerialNumber(tt.args.serialNumber)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetPumpBySerialNumber() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetPumpBySerialNumber() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

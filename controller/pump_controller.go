@@ -22,7 +22,12 @@ func InitRouter() *gin.Engine {
 		v1.POST("pump/types", createPumpType)
 		v1.POST("company", createCompany)
 		v1.POST("sensor", createSensor)
+		v1.POST("sensor-alarm", createSensorAlarm)
+		v1.POST("sensor-contact", createSensorAlarmContact)
 		v1.GET("sensor/:tid/:pid", getSensorByTypeAndId)
+		v1.GET("sensor-data/:serial", getSensorDataBySerial)
+		v1.GET("sensor-alarm", getAlarms)
+		v1.GET("sensor-contact/:id", getContactsByCompany)
 		v1.GET("company/:id", getCompanyById)
 		v1.GET("pump/types", getPumpTypes)
 		v1.GET("pump/by-serial/:serial", getPumpBySerial)
@@ -76,6 +81,36 @@ func createSensor(c *gin.Context) {
 	c.JSON(http.StatusCreated, p)
 }
 
+func createSensorAlarm(c *gin.Context) {
+	p := model.SensorAlarm{}
+	err := c.Bind(&p)
+	if err != nil {
+		c.JSON(http.StatusBadGateway, generateErrorMessage("invalid json string"))
+		return
+	}
+	err = repository.AddSensorAlarm(p)
+	if err != nil {
+		c.JSON(http.StatusBadGateway, generateErrorMessage(err.Error()))
+		return
+	}
+	c.JSON(http.StatusCreated, p)
+}
+
+func createSensorAlarmContact(c *gin.Context) {
+	p := model.SensorAlarmContact{}
+	err := c.Bind(&p)
+	if err != nil {
+		c.JSON(http.StatusBadGateway, generateErrorMessage("invalid json string"))
+		return
+	}
+	err = repository.AddSensorAlarmContact(p)
+	if err != nil {
+		c.JSON(http.StatusBadGateway, generateErrorMessage(err.Error()))
+		return
+	}
+	c.JSON(http.StatusCreated, p)
+}
+
 func createPumpType(c *gin.Context) {
 	p := model.PumpTypes{}
 	err := c.Bind(&p)
@@ -103,6 +138,31 @@ func getCompanyById(c *gin.Context) {
 		c.JSON(http.StatusBadGateway, generateErrorMessage(err.Error()))
 		return
 	}
+	c.JSON(http.StatusOK, p)
+}
+
+func getSensorDataBySerial(c *gin.Context) {
+	serial := c.Param("serial")
+	if len(serial) == 0 {
+		c.JSON(http.StatusBadGateway, generateErrorMessage("serial number is required"))
+		return
+	}
+	p, err := repository.GetSensorDataBySerial(serial)
+	if err != nil {
+		c.JSON(http.StatusBadGateway, generateErrorMessage(err.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, p)
+}
+
+func getContactsByCompany(c *gin.Context) {
+	id := c.Param("id")
+	if len(id) == 0 {
+		c.JSON(http.StatusBadGateway, generateErrorMessage("company id is required"))
+		return
+	}
+	i, _ := strconv.Atoi(id)
+	p := repository.GetAlarmContacts(i)
 	c.JSON(http.StatusOK, p)
 }
 
@@ -139,6 +199,15 @@ func getPumpBySerial(c *gin.Context) {
 
 func getPumpTypes(c *gin.Context) {
 	res, err := repository.FetchPumpTypes()
+	if err != nil {
+		c.JSON(http.StatusBadGateway, generateErrorMessage(err.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, res)
+}
+
+func getAlarms(c *gin.Context) {
+	res, err := repository.GetAllSensorAlarms()
 	if err != nil {
 		c.JSON(http.StatusBadGateway, generateErrorMessage(err.Error()))
 		return

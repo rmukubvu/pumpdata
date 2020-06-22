@@ -20,6 +20,7 @@ const (
 	InsertPump = `insert into pump (type_id,serial_number,nick_name,lat,lng,created_date) 
 				  values (:type_id,:serial_number,:nick_name,:lat,:lng,:created_date)`
 	SelectPumpWithSerial = `select * from pump where serial_number = $1`
+	SelectAllPumps       = `select * from pump`
 )
 
 func (p *Pump) ToJson() string {
@@ -37,6 +38,10 @@ func (p *Pump) FromJson(body []byte) error {
 
 func (p *Pump) Key() string {
 	return fmt.Sprintf("pump-%s", p.SerialNumber)
+}
+
+func (p *Pump) IdKey() string {
+	return fmt.Sprintf("pump.%d", p.Id)
 }
 
 func (p *Pump) ToMap() map[string]interface{} {
