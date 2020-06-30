@@ -17,6 +17,7 @@ var (
 	alarm        = make(map[int]model.SensorAlarm)
 	contacts     = make(map[int][]model.SensorAlarmContact)
 	sensorCache  = make(map[string]model.SensorData)
+	pumpCache    = make(map[string]model.Pump)
 	rb           *rabbit.QueueService
 )
 
@@ -31,9 +32,17 @@ func init() {
 	rb = rabbit.New()
 	//cache the alarms
 	alarms, _ := GetAllSensorAlarms()
-	for _, i := range alarms {
-		alarm[i.TypeId] = i
+	for _, e := range alarms {
+		alarm[e.TypeId] = e
 	}
+
+	//cache pumps
+	//cache the alarms
+	allPumps, _ := GetAllPumps()
+	for _, e := range allPumps {
+		pumpCache[e.SerialNumber] = e
+	}
+
 	//cache contacts
 	alarmContacts, _ := store.GetAlarmContacts()
 	for _, e := range alarmContacts {
@@ -203,6 +212,7 @@ func GetPumpBySerialNumber(serialNumber string, refresh bool) (model.Pump, error
 		//continue with other business
 		p, err = store.GetPumpBySerialNumber(serialNumber)
 		//cache it
+		pumpCache[serialNumber] = p
 		cacheService.Set(p.Key(), p.ToJson())
 		cacheService.Set(p.IdKey(), serialNumber)
 		//done
@@ -213,6 +223,7 @@ func GetPumpBySerialNumber(serialNumber string, refresh bool) (model.Pump, error
 	if err != nil {
 		p, err = store.GetPumpBySerialNumber(serialNumber)
 		//cache it
+		pumpCache[serialNumber] = p
 		cacheService.Set(p.Key(), p.ToJson())
 		cacheService.Set(p.IdKey(), serialNumber)
 		//done
@@ -268,12 +279,16 @@ func triggerAlarm(p model.Sensor, serial string) error {
 	}
 
 	var message = "ok"
+	var smsMessage = ""
+	sensorName := store.GetSensorName(p.TypeId)
 	if i < res.MinValue {
-		message = fmt.Sprintf("value is below threshold of %d.\n%s", res.MinValue, res.AlertMessage)
+		smsMessage = fmt.Sprintf("%s at %s\nvalue is below threshold of %d.", sensorName, pumpCache[serial].NickName, res.MinValue)
+		message = fmt.Sprintf("%s\nvalue is below threshold of %d.\n%s", pumpCache[serial].NickName, res.MinValue, res.AlertMessage)
 	}
 
 	if i > res.MaxValue {
-		message = fmt.Sprintf("value is above threshold of %d.\n%s", res.MaxValue, res.AlertMessage)
+		smsMessage = fmt.Sprintf("%s at %s\nvalue is above threshold of %d.", sensorName, pumpCache[serial].NickName, res.MaxValue)
+		message = fmt.Sprintf("%s\nvalue is above threshold of %d.\n%s", pumpCache[serial].NickName, res.MaxValue, res.AlertMessage)
 	}
 
 	//dont send anything
@@ -295,7 +310,7 @@ func triggerAlarm(p model.Sensor, serial string) error {
 		CreatedDate:  time.Now().String(),
 	}
 	//send an sms
-	go sendSms(m, message)
+	go sendSms(m, smsMessage)
 	//do the trigger
 	return rb.TriggerAlarm()
 }
