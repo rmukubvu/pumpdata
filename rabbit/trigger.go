@@ -26,7 +26,10 @@ type TriggerMessage struct {
 	PumpId       int                        `json:"pump_id"`
 	Value        string                     `json:"s_value"`
 	Contacts     []model.SensorAlarmContact `json:"contacts"`
+	CreatedDate  string                     `json:"created_date"`
 }
+
+const queueName = "amakhosi.alarms"
 
 func New() *QueueService {
 	qs := &QueueService{}
@@ -38,12 +41,12 @@ func New() *QueueService {
 	failOnError(err, "Failed to open a channel")
 
 	qs.R.q, err = qs.R.ch.QueueDeclare(
-		"amakhosi.alarms", // name
-		false,             // durable
-		false,             // delete when unused
-		false,             // exclusive
-		false,             // no-wait
-		nil,               // arguments
+		queueName, // name
+		false,     // durable
+		false,     // delete when unused
+		false,     // exclusive
+		false,     // no-wait
+		nil,       // arguments
 	)
 	failOnError(err, "Failed to declare a queue")
 	return qs

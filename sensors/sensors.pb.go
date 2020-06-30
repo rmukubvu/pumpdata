@@ -77,6 +77,100 @@ func (m *SensorRequest) GetValue() string {
 	return ""
 }
 
+type PumpRequest struct {
+	SerialNumber         string   `protobuf:"bytes,1,opt,name=serialNumber,proto3" json:"serialNumber,omitempty"`
+	Lat                  string   `protobuf:"bytes,2,opt,name=lat,proto3" json:"lat,omitempty"`
+	Lon                  string   `protobuf:"bytes,3,opt,name=lon,proto3" json:"lon,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *PumpRequest) Reset()         { *m = PumpRequest{} }
+func (m *PumpRequest) String() string { return proto.CompactTextString(m) }
+func (*PumpRequest) ProtoMessage()    {}
+func (*PumpRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e9ecade768b06d2a, []int{1}
+}
+
+func (m *PumpRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_PumpRequest.Unmarshal(m, b)
+}
+func (m *PumpRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_PumpRequest.Marshal(b, m, deterministic)
+}
+func (m *PumpRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PumpRequest.Merge(m, src)
+}
+func (m *PumpRequest) XXX_Size() int {
+	return xxx_messageInfo_PumpRequest.Size(m)
+}
+func (m *PumpRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_PumpRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PumpRequest proto.InternalMessageInfo
+
+func (m *PumpRequest) GetSerialNumber() string {
+	if m != nil {
+		return m.SerialNumber
+	}
+	return ""
+}
+
+func (m *PumpRequest) GetLat() string {
+	if m != nil {
+		return m.Lat
+	}
+	return ""
+}
+
+func (m *PumpRequest) GetLon() string {
+	if m != nil {
+		return m.Lon
+	}
+	return ""
+}
+
+type PumpResponse struct {
+	Message              string   `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *PumpResponse) Reset()         { *m = PumpResponse{} }
+func (m *PumpResponse) String() string { return proto.CompactTextString(m) }
+func (*PumpResponse) ProtoMessage()    {}
+func (*PumpResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e9ecade768b06d2a, []int{2}
+}
+
+func (m *PumpResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_PumpResponse.Unmarshal(m, b)
+}
+func (m *PumpResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_PumpResponse.Marshal(b, m, deterministic)
+}
+func (m *PumpResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PumpResponse.Merge(m, src)
+}
+func (m *PumpResponse) XXX_Size() int {
+	return xxx_messageInfo_PumpResponse.Size(m)
+}
+func (m *PumpResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_PumpResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PumpResponse proto.InternalMessageInfo
+
+func (m *PumpResponse) GetMessage() string {
+	if m != nil {
+		return m.Message
+	}
+	return ""
+}
+
 type SensorResponse struct {
 	Message              string   `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -88,7 +182,7 @@ func (m *SensorResponse) Reset()         { *m = SensorResponse{} }
 func (m *SensorResponse) String() string { return proto.CompactTextString(m) }
 func (*SensorResponse) ProtoMessage()    {}
 func (*SensorResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e9ecade768b06d2a, []int{1}
+	return fileDescriptor_e9ecade768b06d2a, []int{3}
 }
 
 func (m *SensorResponse) XXX_Unmarshal(b []byte) error {
@@ -127,7 +221,7 @@ func (m *PingRequest) Reset()         { *m = PingRequest{} }
 func (m *PingRequest) String() string { return proto.CompactTextString(m) }
 func (*PingRequest) ProtoMessage()    {}
 func (*PingRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e9ecade768b06d2a, []int{2}
+	return fileDescriptor_e9ecade768b06d2a, []int{4}
 }
 
 func (m *PingRequest) XXX_Unmarshal(b []byte) error {
@@ -166,7 +260,7 @@ func (m *PingResponse) Reset()         { *m = PingResponse{} }
 func (m *PingResponse) String() string { return proto.CompactTextString(m) }
 func (*PingResponse) ProtoMessage()    {}
 func (*PingResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e9ecade768b06d2a, []int{3}
+	return fileDescriptor_e9ecade768b06d2a, []int{5}
 }
 
 func (m *PingResponse) XXX_Unmarshal(b []byte) error {
@@ -196,6 +290,8 @@ func (m *PingResponse) GetData() string {
 
 func init() {
 	proto.RegisterType((*SensorRequest)(nil), "sensors.SensorRequest")
+	proto.RegisterType((*PumpRequest)(nil), "sensors.PumpRequest")
+	proto.RegisterType((*PumpResponse)(nil), "sensors.PumpResponse")
 	proto.RegisterType((*SensorResponse)(nil), "sensors.SensorResponse")
 	proto.RegisterType((*PingRequest)(nil), "sensors.PingRequest")
 	proto.RegisterType((*PingResponse)(nil), "sensors.PingResponse")
@@ -204,24 +300,27 @@ func init() {
 func init() { proto.RegisterFile("sensors/sensors.proto", fileDescriptor_e9ecade768b06d2a) }
 
 var fileDescriptor_e9ecade768b06d2a = []byte{
-	// 264 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x51, 0xcb, 0x4e, 0xc3, 0x30,
-	0x10, 0x24, 0x50, 0x5a, 0xb1, 0x14, 0x0e, 0xab, 0x06, 0xa2, 0x1e, 0x10, 0x58, 0x08, 0x21, 0x0e,
-	0x89, 0x44, 0xff, 0x80, 0x1b, 0x1c, 0x2a, 0xd4, 0xde, 0xb8, 0x39, 0x74, 0x09, 0x16, 0xb5, 0x1d,
-	0xfc, 0xe8, 0x3f, 0xf0, 0xd7, 0xa8, 0x76, 0x8c, 0x1a, 0xe0, 0xe4, 0x9d, 0xd9, 0xf1, 0xce, 0x68,
-	0x17, 0x72, 0x4b, 0xca, 0x6a, 0x63, 0xab, 0xee, 0x2d, 0x5b, 0xa3, 0x9d, 0xc6, 0x51, 0x07, 0x99,
-	0x80, 0x93, 0x65, 0x28, 0x17, 0xf4, 0xe9, 0xc9, 0x3a, 0xbc, 0x00, 0x88, 0xbd, 0x39, 0x97, 0x54,
-	0x64, 0x97, 0xd9, 0xed, 0xd1, 0x62, 0x87, 0x41, 0x06, 0x63, 0x4b, 0x46, 0xf0, 0xf5, 0xdc, 0xcb,
-	0x9a, 0x4c, 0xb1, 0x1f, 0x14, 0x3d, 0x0e, 0x27, 0x70, 0xb8, 0xe1, 0x6b, 0x4f, 0xc5, 0x41, 0x68,
-	0x46, 0xc0, 0xee, 0xe0, 0x34, 0x59, 0xd9, 0x56, 0x2b, 0x4b, 0x58, 0xc0, 0x48, 0x92, 0xb5, 0xbc,
-	0x49, 0x46, 0x09, 0xb2, 0x2b, 0x38, 0x7e, 0x16, 0xaa, 0x49, 0xa1, 0x10, 0x06, 0x2b, 0xee, 0x78,
-	0xa7, 0x0a, 0x35, 0x63, 0x30, 0x8e, 0x92, 0x6e, 0xd8, 0x3f, 0x9a, 0xfb, 0xaf, 0x0c, 0x86, 0xd1,
-	0x13, 0x9f, 0x20, 0x5f, 0x92, 0x5a, 0x45, 0xf4, 0xa8, 0xde, 0xb4, 0x91, 0xdc, 0x09, 0xad, 0xf0,
-	0xac, 0x4c, 0xab, 0xe9, 0x2d, 0x62, 0x7a, 0xfe, 0x87, 0x8f, 0x46, 0x6c, 0x0f, 0x67, 0x30, 0xd8,
-	0x5a, 0xe3, 0xe4, 0x47, 0xb2, 0x13, 0x76, 0x9a, 0xff, 0x62, 0xe3, 0xb7, 0x87, 0x9b, 0x97, 0xeb,
-	0x46, 0xb8, 0x77, 0x5f, 0x97, 0xaf, 0x5a, 0x56, 0x46, 0xfa, 0x0f, 0x5f, 0x6f, 0x7c, 0xd5, 0x7a,
-	0xd9, 0x6e, 0xb3, 0xa6, 0x03, 0xd5, 0xc3, 0x70, 0xa1, 0xd9, 0x77, 0x00, 0x00, 0x00, 0xff, 0xff,
-	0x47, 0xb8, 0x0a, 0x80, 0xba, 0x01, 0x00, 0x00,
+	// 319 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x52, 0x4f, 0x4f, 0x3a, 0x31,
+	0x10, 0xfd, 0xed, 0x0f, 0x84, 0x38, 0xa0, 0x31, 0x0d, 0xe8, 0x86, 0x83, 0xd1, 0xc6, 0x18, 0xe2,
+	0x01, 0x12, 0x39, 0x7a, 0xd3, 0x93, 0x1e, 0x08, 0x81, 0x78, 0xf1, 0xd6, 0x95, 0x11, 0x37, 0x6e,
+	0xdb, 0xb5, 0x7f, 0xf8, 0x88, 0x7e, 0x2e, 0xb3, 0xfd, 0x83, 0x0b, 0x92, 0x78, 0xda, 0x99, 0xd7,
+	0x37, 0xef, 0xcd, 0xdb, 0x16, 0xfa, 0x1a, 0x85, 0x96, 0x4a, 0x8f, 0xc3, 0x77, 0x54, 0x2a, 0x69,
+	0x24, 0x69, 0x87, 0x96, 0xe6, 0x70, 0xb4, 0x70, 0xe5, 0x1c, 0x3f, 0x2d, 0x6a, 0x43, 0xce, 0x01,
+	0xfc, 0xd9, 0x94, 0x71, 0x4c, 0x93, 0x8b, 0x64, 0x78, 0x38, 0xaf, 0x21, 0x84, 0x42, 0x57, 0xa3,
+	0xca, 0x59, 0x31, 0xb5, 0x3c, 0x43, 0x95, 0xfe, 0x77, 0x8c, 0x2d, 0x8c, 0xf4, 0xe0, 0x60, 0xcd,
+	0x0a, 0x8b, 0x69, 0xc3, 0x1d, 0xfa, 0x86, 0x3e, 0x43, 0x67, 0x66, 0x79, 0x19, 0x8d, 0x76, 0x85,
+	0x92, 0x3d, 0x42, 0x27, 0xd0, 0x28, 0x98, 0x09, 0x1e, 0x55, 0xe9, 0x10, 0x29, 0x82, 0x70, 0x55,
+	0xd2, 0x21, 0x74, 0xbd, 0xac, 0x2e, 0xa5, 0xd0, 0x48, 0x52, 0x68, 0x73, 0xd4, 0x9a, 0xad, 0xe2,
+	0xf6, 0xb1, 0xa5, 0x37, 0x70, 0x1c, 0xb3, 0xfe, 0xc9, 0xbd, 0x84, 0xce, 0x2c, 0x17, 0xab, 0xb8,
+	0x2c, 0x81, 0xe6, 0x92, 0x19, 0x16, 0x58, 0xae, 0xa6, 0x14, 0xba, 0x9e, 0x12, 0xc4, 0xf6, 0x70,
+	0x6e, 0xbf, 0x12, 0x68, 0x79, 0x4f, 0xf2, 0x04, 0xfd, 0x05, 0x8a, 0xa5, 0xef, 0x1e, 0xc5, 0x9b,
+	0x54, 0x9c, 0x99, 0x5c, 0x0a, 0x72, 0x3a, 0x8a, 0x77, 0xb3, 0x75, 0x13, 0x83, 0xb3, 0x5f, 0xb8,
+	0x37, 0xa2, 0xff, 0xc8, 0x1d, 0xc0, 0x83, 0x42, 0x66, 0xb0, 0x4a, 0x4e, 0x7a, 0x1b, 0x62, 0xed,
+	0xff, 0x0e, 0xfa, 0x3b, 0xe8, 0x66, 0x78, 0x02, 0xcd, 0x6a, 0xef, 0xfa, 0xd8, 0x4f, 0xd2, 0xfa,
+	0x58, 0x2d, 0xdc, 0xfd, 0xf5, 0xcb, 0xd5, 0x2a, 0x37, 0xef, 0x36, 0x1b, 0xbd, 0x4a, 0x3e, 0x56,
+	0xdc, 0x7e, 0xd8, 0x6c, 0x6d, 0xc7, 0xa5, 0xe5, 0x65, 0x15, 0x34, 0x3e, 0xaf, 0xac, 0xe5, 0xde,
+	0xd7, 0xe4, 0x3b, 0x00, 0x00, 0xff, 0xff, 0x93, 0xfe, 0x65, 0x83, 0x78, 0x02, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -237,6 +336,7 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type SensorClient interface {
 	SendSensorInformation(ctx context.Context, in *SensorRequest, opts ...grpc.CallOption) (*SensorResponse, error)
+	CreatePump(ctx context.Context, in *PumpRequest, opts ...grpc.CallOption) (*PumpResponse, error)
 	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error)
 }
 
@@ -257,6 +357,15 @@ func (c *sensorClient) SendSensorInformation(ctx context.Context, in *SensorRequ
 	return out, nil
 }
 
+func (c *sensorClient) CreatePump(ctx context.Context, in *PumpRequest, opts ...grpc.CallOption) (*PumpResponse, error) {
+	out := new(PumpResponse)
+	err := c.cc.Invoke(ctx, "/sensors.Sensor/CreatePump", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *sensorClient) Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error) {
 	out := new(PingResponse)
 	err := c.cc.Invoke(ctx, "/sensors.Sensor/Ping", in, out, opts...)
@@ -269,6 +378,7 @@ func (c *sensorClient) Ping(ctx context.Context, in *PingRequest, opts ...grpc.C
 // SensorServer is the server API for Sensor service.
 type SensorServer interface {
 	SendSensorInformation(context.Context, *SensorRequest) (*SensorResponse, error)
+	CreatePump(context.Context, *PumpRequest) (*PumpResponse, error)
 	Ping(context.Context, *PingRequest) (*PingResponse, error)
 }
 
@@ -290,6 +400,24 @@ func _Sensor_SendSensorInformation_Handler(srv interface{}, ctx context.Context,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(SensorServer).SendSensorInformation(ctx, req.(*SensorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Sensor_CreatePump_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PumpRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SensorServer).CreatePump(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sensors.Sensor/CreatePump",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SensorServer).CreatePump(ctx, req.(*PumpRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -319,6 +447,10 @@ var _Sensor_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SendSensorInformation",
 			Handler:    _Sensor_SendSensorInformation_Handler,
+		},
+		{
+			MethodName: "CreatePump",
+			Handler:    _Sensor_CreatePump_Handler,
 		},
 		{
 			MethodName: "Ping",

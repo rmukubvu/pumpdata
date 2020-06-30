@@ -1,8 +1,12 @@
 package store
 
 import (
+	"fmt"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"strconv"
+	"strings"
+	"time"
 )
 
 var (
@@ -33,6 +37,21 @@ func panicOnError(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func GetCreatedDate() int {
+	now := time.Now()
+	year, month, day := now.Date()
+	res := fmt.Sprintf("%d%d%d", year, int(month), day)
+	date, _ := strconv.Atoi(res)
+	return date
+}
+
+func GetDateFromString(input string) int {
+	//date format from service will be yyyy-MM-dd
+	s := strings.ReplaceAll(input, "-", "")
+	date, _ := strconv.Atoi(s)
+	return date
 }
 
 func CloseDBConnection() {

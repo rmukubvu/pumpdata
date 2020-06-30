@@ -6,19 +6,23 @@ import (
 	"github.com/rmukubvu/pumpdata/cache"
 	"github.com/rmukubvu/pumpdata/model"
 	"github.com/rmukubvu/pumpdata/rabbit"
+	"github.com/rmukubvu/pumpdata/sms"
 	"github.com/rmukubvu/pumpdata/store"
 	"strconv"
+	"time"
 )
 
 var (
 	cacheService *cache.Service
 	alarm        = make(map[int]model.SensorAlarm)
 	contacts     = make(map[int][]model.SensorAlarmContact)
+	sensorCache  = make(map[string]model.SensorData)
 	rb           *rabbit.QueueService
 )
 
 const (
-	pumpTypesKey = "pump.types"
+	pumpTypesKey     = "pump.types"
+	amakosiCompanyId = 1
 )
 
 func init() {
@@ -30,6 +34,19 @@ func init() {
 	for _, i := range alarms {
 		alarm[i.TypeId] = i
 	}
+	//cache contacts
+	alarmContacts, _ := store.GetAlarmContacts()
+	for _, e := range alarmContacts {
+		//get and append
+		slice := contacts[e.CompanyId]
+		slice = append(slice, e)
+		contacts[e.CompanyId] = slice
+	}
+	//cache sensor data
+	data, _ := store.GetSensorData()
+	for _, e := range data {
+		cacheSensorData(e)
+	}
 }
 
 //if redis is down ,,, will be a problem
@@ -39,12 +56,12 @@ func init() {
 // to check if redis is up
 // investigate if there is any effect of
 func AddPump(p model.Pump) error {
-	id, err := store.AddPump(p)
+	err := store.AddPump(p)
 	if err != nil {
 		return err
 	}
-	p.Id = int(id)
-	return cacheService.Set(p.IdKey(), p.SerialNumber)
+	_, err = GetPumpBySerialNumber(p.SerialNumber, true)
+	return err
 }
 
 func AddCompany(p model.Company) error {
@@ -71,7 +88,17 @@ func AddSensor(p model.Sensor) error {
 		//do trigger
 		go triggerAlarm(p, serial)
 		//do the sensor data
-		go store.AddSensorData(p, serial, store.GetSensorName(p.TypeId))
+		p := model.SensorData{
+			SerialNumber: serial,
+			TypeText:     store.GetSensorName(p.TypeId),
+			TypeId:       p.TypeId,
+			Value:        p.Value,
+			UpdateDate:   p.CreatedDate,
+		}
+		//cache it
+		cacheSensorData(p)
+		//go and save it
+		go store.AddSensorData(p)
 		//cache the rest
 		cacheService.Set(p.Key(), p.ToJson())
 	}
@@ -97,14 +124,54 @@ func AddSensorAlarmContact(p model.SensorAlarmContact) error {
 	return err
 }
 
+func DashboardAlarms() ([]model.SensorWithAlarms, error) {
+	todayAlarm, err := store.DailyAlarms()
+	if err != nil {
+		return nil, err
+	}
+	var p []model.SensorWithAlarms
+	for _, e := range todayAlarm {
+		s, _ := store.SensorDataBySerialNumberAndId(e.SerialNumber, e.TypeId)
+		a := alarm[s.TypeId]
+		m := model.SensorWithAlarms{
+			S: s,
+			A: a,
+		}
+		p = append(p, m)
+	}
+	return p, nil
+}
+
+func GetWaterTankLevelForSerial(serial string) (model.SensorData, error) {
+	const waterTankTypeId = 9
+	//return store.SensorDataBySerialNumberAndId(serial, waterTankTypeId)
+	key := fmt.Sprintf("sensor.%s.%d", serial, waterTankTypeId)
+	return sensorCache[key], nil
+}
+
+func GetAllPumps() ([]model.Pump, error) {
+	return store.GetAllPumps()
+}
+
 func GetAllSensorAlarms() ([]model.SensorAlarm, error) {
 	return store.GetAllAlarms()
 }
 
 func GetSensorDataBySerial(serial string) ([]model.SensorData, error) {
-	return store.SensorDataBySerialNumber(model.SensorData{
+	last := store.GetNumberOfSensors()
+	slice := make([]model.SensorData, 0, last)
+	for i := 1; i <= last; i++ {
+		key := fmt.Sprintf("sensor.%s.%d", serial, i)
+		found := sensorCache[key]
+		if found == (model.SensorData{}) {
+			found = createMissingSensorValues(serial, i)
+		}
+		slice = append(slice, found)
+	}
+	return slice, nil
+	/*return store.SensorDataBySerialNumber(model.SensorData{
 		SerialNumber: serial,
-	})
+	})*/
 }
 
 func GetCompanyById(id int) (model.Company, error) {
@@ -127,8 +194,21 @@ func SensorByTypeAndId(typeId, pumpId int) (model.Sensor, error) {
 	return p, err
 }
 
-func GetPumpBySerialNumber(serialNumber string) (model.Pump, error) {
+func GetPumpBySerialNumber(serialNumber string, refresh bool) (model.Pump, error) {
 	p := model.Pump{SerialNumber: serialNumber}
+	var err error
+	if refresh {
+		//do sensor creation
+		go createDefaultSensorValues(serialNumber)
+		//continue with other business
+		p, err = store.GetPumpBySerialNumber(serialNumber)
+		//cache it
+		cacheService.Set(p.Key(), p.ToJson())
+		cacheService.Set(p.IdKey(), serialNumber)
+		//done
+		return p, err
+	}
+
 	item, err := cacheService.Get(p.Key())
 	if err != nil {
 		p, err = store.GetPumpBySerialNumber(serialNumber)
@@ -201,8 +281,9 @@ func triggerAlarm(p model.Sensor, serial string) error {
 		return nil
 	}
 
-	//trigger
-	m := contacts[c.CompanyId]
+	//trigger -- for dashboard
+	go dailyAlarms(serial, p.TypeId)
+	m := contacts[amakosiCompanyId] //only amakosi staff get the sms information
 	rb.Trigger = rabbit.TriggerMessage{
 		Message:      message,
 		SerialNumber: serial,
@@ -211,9 +292,20 @@ func triggerAlarm(p model.Sensor, serial string) error {
 		PumpId:       p.PumpId,
 		Value:        p.Value,
 		Contacts:     m,
+		CreatedDate:  time.Now().String(),
 	}
+	//send an sms
+	go sendSms(m, message)
 	//do the trigger
 	return rb.TriggerAlarm()
+}
+
+func sendSms(contacts []model.SensorAlarmContact, msg string) {
+	phones := make([]string, 0, cap(contacts))
+	for _, contact := range contacts {
+		phones = append(phones, contact.Cellphone)
+	}
+	sms.Send(phones, msg)
 }
 
 func getCompanyByPumpId(id int) (model.Company, error) {
@@ -225,6 +317,59 @@ func getCompanyByPumpId(id int) (model.Company, error) {
 		err = c.FromJson([]byte(item))
 	}
 	return c, err
+}
+
+func GetPumpsUnderCompany(id int) ([]model.Pump, error) {
+	return store.PumpsUnderCompany(id)
+}
+
+func dailyAlarms(serialNumber string, typeId int) {
+	store.AddDailyAlarm(model.DailyAlarms{
+		SerialNumber: serialNumber,
+		TypeId:       typeId,
+		CreatedDate:  store.GetCreatedDate(),
+	})
+}
+
+func createDefaultSensorValues(serial string) {
+	s, err := store.GetSensorTypes()
+	if err != nil {
+		return
+	}
+
+	for _, e := range s {
+		p := model.SensorData{
+			SerialNumber: serial,
+			TypeId:       e.Id,
+			TypeText:     e.Name,
+			Value:        e.DefaultValue,
+			UpdateDate:   time.Now().Unix(),
+		}
+		_ = store.AddSensorDataRaw(p)
+		//cache it
+		cacheSensorData(p)
+	}
+}
+
+func createMissingSensorValues(serial string, typeId int) model.SensorData {
+	e := store.GetSensorTypeByTypeId(typeId)
+	p := model.SensorData{
+		SerialNumber: serial,
+		TypeId:       e.Id,
+		TypeText:     e.Name,
+		Value:        e.DefaultValue,
+		UpdateDate:   time.Now().Unix(),
+	}
+	_ = store.AddSensorDataRaw(p)
+	//cache it
+	cacheSensorData(p)
+	//done
+	return p
+}
+
+func cacheSensorData(m model.SensorData) {
+	key := fmt.Sprintf("sensor.%s.%d", m.SerialNumber, m.TypeId)
+	sensorCache[key] = m
 }
 
 func cacheTypes() error {

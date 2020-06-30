@@ -29,7 +29,7 @@ const (
 									DO
 									UPDATE
 									SET min_value = :min_value , max_value = :max_value , alert_message = :alert_message`
-	SelectAllAlarms = `select * from sensor_alarms order by type_id`
+	SelectAllAlarms = `select * from sensor_alarms order by type_id asc`
 )
 
 func (p *SensorAlarm) ToJson() string {

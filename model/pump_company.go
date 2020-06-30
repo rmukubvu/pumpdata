@@ -17,6 +17,9 @@ const (
 	InsertPumpCompany = `insert into pump_company (pump_id,company_id,created_date) 
 				  		 values (:pump_id,:company_id,:created_date)`
 	SelectPumpCompanyWithPumpId = `select * from pump_company where pump_id = $1`
+	SelectPumpsByCompanyId      = `select p.* from pump p inner join pump_company c
+							on c.pump_id = p.id
+							where c.company_id = $1`
 )
 
 func (p *Company) ToJson() string {

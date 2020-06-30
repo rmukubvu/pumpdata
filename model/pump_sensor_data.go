@@ -15,21 +15,28 @@ type SensorData struct {
 	UpdateDate   int64  `json:"update_date,omitempty" db:"update_date"`
 }
 
+type SensorWithAlarms struct {
+	S SensorData  `json:"sensor"`
+	A SensorAlarm `json:"alarm"`
+}
+
 const (
 	InsertSensorData = `INSERT INTO sensor_data (serial_number, type_id , s_value , type_text , update_date)
-								VALUES
-								(
-									:serial_number,
-									:type_id,
-									:s_value , 
-									:type_text,
-									:update_date
-								)
-								ON CONFLICT (serial_number, type_id )
-									DO
-										UPDATE
-									SET s_value = :s_value , update_date = :update_date , type_text = :type_text`
-	SelectSensorDataBySerialNumber = `select type_id,type_text,s_value from sensor_data where serial_number = $1`
+						VALUES
+						(
+							:serial_number,
+							:type_id,
+							:s_value , 
+							:type_text,
+							:update_date
+						)
+						ON CONFLICT (serial_number, type_id )
+							DO
+								UPDATE
+						SET s_value = :s_value , update_date = :update_date , type_text = :type_text`
+	SelectSensorDataBySerialNumber      = `select serial_number,type_id,type_text,s_value,update_date from sensor_data where serial_number = $1`
+	SelectSensorDataBySerialNumberAndId = `select serial_number,type_id,type_text,s_value,update_date from sensor_data where serial_number = $1 and type_id = $2`
+	SelectAllSensorData                 = `select * from sensor_data`
 )
 
 func (p *SensorData) ToJson() string {

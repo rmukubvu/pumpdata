@@ -23,7 +23,7 @@ const (
 										:email_address , 
 										:created_date
 									)`
-	SelectAllAlarmsContacts = `select * from sensor_alarms_contacts where company_id = $1`
+	SelectAllAlarmsContacts = `select * from sensor_alarms_contacts where company_id = 1`
 )
 
 func (p *SensorAlarmContact) ToJson() string {

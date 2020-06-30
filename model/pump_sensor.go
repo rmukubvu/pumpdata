@@ -16,7 +16,7 @@ type Sensor struct {
 
 const (
 	InsertSensor = `insert into pump_sensor (type_id,pump_id,s_value,created_date) 
-				  		 values (:type_id,:pump_id,:s_value,:created_date)`
+				    values (:type_id,:pump_id,:s_value,:created_date)`
 	SelectSensorByTypeAndPumpId = `select * from pump_sensor where type_id = $1 and pump_id = $2`
 )
 

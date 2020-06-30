@@ -14,7 +14,7 @@ import (
 var (
 	mu               sync.Mutex //guards lastId
 	lastId           = 0
-	sensorMap        = make(map[int]string)
+	sensorMap        = make(map[int]model.SensorTypes)
 	sensorMapFlipped = make(map[string]int)
 	sensorTypes      = make([]model.SensorTypes, 0)
 	sensorConfigured = errors.New("this sensor has be added to this server")
@@ -33,9 +33,17 @@ func GetSensorId(s string) (int, error) {
 	return getSensor(s)
 }
 
+func GetSensorTypeByTypeId(id int) model.SensorTypes {
+	return sensorMap[id]
+}
+
 // return key if exists else zero
 func GetSensorName(id int) string {
-	return sensorMap[id]
+	return sensorMap[id].Name
+}
+
+func GetNumberOfSensors() int {
+	return lastId
 }
 
 // get sensors types
@@ -65,7 +73,9 @@ func readFileLineAndMap() {
 		line := scanner.Text()
 		split := strings.Split(line, ":")
 		ss := split[1]
-		update(ss)
+		d := split[2]
+		v := split[3]
+		update(ss, d, v)
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -74,7 +84,7 @@ func readFileLineAndMap() {
 }
 
 func addNewSensor(s string) int {
-	update(s)
+	update(s, "new", "0")
 	//flush them to file
 	line := fmt.Sprintf("\n%d:%s", lastId, s)
 	appendToFile(line)
@@ -95,15 +105,18 @@ func appendToFile(line string) {
 	}
 }
 
-func update(s string) {
+func update(s, d, v string) {
 	mu.Lock()
 	id := lastId + 1
-	sensorMap[id] = s
+	m := model.SensorTypes{
+		Id:           id,
+		Name:         s,
+		DisplayName:  d,
+		DefaultValue: v,
+	}
+	sensorMap[id] = m
 	sensorMapFlipped[s] = id
-	sensorTypes = append(sensorTypes, model.SensorTypes{
-		Id:   id,
-		Name: s,
-	})
+	sensorTypes = append(sensorTypes, m)
 	lastId = id
 	mu.Unlock()
 }

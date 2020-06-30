@@ -41,6 +41,15 @@ func (s *Service) Set(key string, v string) error {
 	return nil
 }
 
+func (s *Service) SetWithExpiry(key string, v string, expiryMinutes int) error {
+	conn := s.pool.Get()
+	_, err := conn.Do("SET", key, v, "EX", expiryMinutes)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *Service) Get(key string) (string, error) {
 	conn := s.pool.Get()
 	item, err := redis.String(conn.Do("GET", key))

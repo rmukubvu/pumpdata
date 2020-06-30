@@ -18,7 +18,19 @@ type Pump struct {
 
 const (
 	InsertPump = `insert into pump (type_id,serial_number,nick_name,lat,lng,created_date) 
-				  values (:type_id,:serial_number,:nick_name,:lat,:lng,:created_date)`
+				  values 
+					(	
+							:type_id,
+                          	:serial_number,
+ 							:nick_name,
+							:lat,
+							:lng,
+							:created_date
+					)
+					ON CONFLICT ( serial_number )
+									DO
+									UPDATE
+									SET type_id = :type_id , nick_name = :nick_name , lat = :lat , lng = :lng`
 	SelectPumpWithSerial = `select * from pump where serial_number = $1`
 	SelectAllPumps       = `select * from pump`
 )
