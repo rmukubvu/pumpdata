@@ -7,17 +7,32 @@ import (
 )
 
 type Sensor struct {
-	Id          int    `json:"id" db:"id"`
-	TypeId      int    `json:"type_id" db:"type_id"`
-	PumpId      int    `json:"pump_id" db:"pump_id"`
-	Value       string `json:"s_value" db:"s_value"`
-	CreatedDate int64  `json:"created_date" db:"created_date"`
+	Id           int       `json:"id" db:"id"`
+	TypeId       int       `json:"type_id" db:"type_id"`
+	PumpId       int       `json:"pump_id" db:"pump_id"`
+	SerialNumber string    `json:"serial_number" db:"serial_number"`
+	Value        string    `json:"s_value" db:"s_value"`
+	CreatedDate  int64     `json:"created_date" db:"created_date"`
+	UpdatedDate  time.Time `json:"updated_date" db:"updated_date"`
 }
 
 const (
-	InsertSensor = `insert into pump_sensor (type_id,pump_id,s_value,created_date) 
-				    values (:type_id,:pump_id,:s_value,:created_date)`
+	InsertSensor = `insert into pump_sensor (type_id,pump_id,serial_number,s_value,created_date) 
+				    values (:type_id,:pump_id,:serial_number,:s_value,:created_date)`
 	SelectSensorByTypeAndPumpId = `select * from pump_sensor where type_id = $1 and pump_id = $2`
+	SelectSensorByTypeAndSerial = `select * from pump_sensor where type_id = $1 and serial_number = $2`
+	SelectSensorViewModel       = `	select
+								p.nick_name as pump_name,
+								REPLACE(st.name,'_',' ') as sensor_name,
+								ps.serial_number,
+								ps.s_value,
+								TO_CHAR(ps.updated_date :: DATE, 'dd/mm/yyyy') as created_date
+								from pump p
+								inner join pump_sensor ps on p.id = ps.pump_id
+								inner join sensor_type st on ps.type_id = st.id
+								where ps.serial_number = $1
+								and ps.type_id = $2
+								`
 )
 
 func (p *Sensor) ToJson() string {

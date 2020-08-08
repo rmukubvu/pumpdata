@@ -5,10 +5,10 @@ import (
 )
 
 type SensorTypes struct {
-	Id           int    `json:"id"`
-	Name         string `json:"name"`
-	DisplayName  string `json:"display_name"`
-	DefaultValue string `json:"default_value"`
+	Id           int    `json:"id" db:"id"`
+	Name         string `json:"name"  db:"name"`
+	DisplayName  string `json:"display_name"  db:"display_name"`
+	DefaultValue string `json:"default_value" db:"default_value"`
 }
 
 //https://stackoverflow.com/questions/41774046/enabling-intellijs-fancy-%E2%89%A0-not-equal-to-operator

@@ -41,9 +41,9 @@ func (s *Service) Set(key string, v string) error {
 	return nil
 }
 
-func (s *Service) SetWithExpiry(key string, v string, expiryMinutes int) error {
+func (s *Service) SetWithExpiry(key string, v string, expirySeconds int) error {
 	conn := s.pool.Get()
-	_, err := conn.Do("SET", key, v, "EX", expiryMinutes)
+	_, err := conn.Do("SET", key, v, "EX", expirySeconds)
 	if err != nil {
 		return err
 	}

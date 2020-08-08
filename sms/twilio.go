@@ -3,39 +3,77 @@ package sms
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/rmukubvu/pumpdata/model"
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
-func Send(to []string, message string) {
-	for _, e := range to {
-		send(e, message)
+type Account struct {
+	accountSid string
+	authToken  string
+	from       string
+	to         string
+	url        string
+	client     *http.Client
+	req        *http.Request
+}
+
+type TwilioConfig struct {
+	Sid, Token, From string
+}
+
+func New(c TwilioConfig) *Account {
+	return &Account{
+		accountSid: c.Sid,
+		authToken:  c.Token,
+		from:       c.From,
+		client:     &http.Client{},
+		url:        "https://api.twilio.com/2010-04-01/Accounts/" + c.Sid + "/Messages.json",
 	}
 }
 
-func send(to, message string) (string, error) {
-	// Set account keys & information
-	accountSid := "AC06dc812b689948eff7b484b7ad3a3548"
-	authToken := "8ade518cea360d0e41547dd8529cf2ef"
-	urlStr := "https://api.twilio.com/2010-04-01/Accounts/" + accountSid + "/Messages.json"
-	//to fetch number from config.yml
-	// Pack up the data for our message
+func (t *Account) buildMessageReader(to, message string) strings.Reader {
 	msgData := url.Values{}
 	msgData.Set("To", to)
-	msgData.Set("From", "15045798139")
+	msgData.Set("From", t.from)
 	msgData.Set("Body", message)
-	msgDataReader := *strings.NewReader(msgData.Encode())
+	return *strings.NewReader(msgData.Encode())
+}
 
-	// Create HTTP request client
-	client := &http.Client{}
-	req, _ := http.NewRequest("POST", urlStr, &msgDataReader)
-	req.SetBasicAuth(accountSid, authToken)
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+func (t *Account) Send(to string, message string) model.PumpLogs {
+	return t.send(to, message)
+}
 
-	// Make HTTP POST request and return message SID
-	resp, _ := client.Do(req)
+func (t *Account) SendToMultiple(to []model.DigitalMessage) []model.PumpLogs {
+	res := make([]model.PumpLogs, 0)
+	for _, e := range to {
+		res = append(res, t.send(e.Receiver, e.Message))
+	}
+	return res
+}
+
+func (t *Account) SendToMultipleNumbers(to []string, message string) []model.PumpLogs {
+	res := make([]model.PumpLogs, 0)
+	for _, e := range to {
+		res = append(res, t.send(e, message))
+	}
+	return res
+}
+
+func (t *Account) send(to, message string) model.PumpLogs {
+	reader := t.buildMessageReader(to, message)
+	t.to = to
+	t.req, _ = http.NewRequest("POST", t.url, &reader)
+	t.req.SetBasicAuth(t.accountSid, t.authToken)
+	t.req.Header.Add("Accept", "application/json")
+	t.req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	return t.post()
+}
+
+func (t *Account) post() model.PumpLogs {
+	resp, _ := t.client.Do(t.req)
 	var err error
 	var responseMessage string
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
@@ -48,5 +86,10 @@ func send(to, message string) (string, error) {
 	} else {
 		responseMessage = resp.Status
 	}
-	return responseMessage, err
+	return model.PumpLogs{
+		Payload: responseMessage,
+		Error:   resp.Status,
+		Date:    time.Now().String(),
+		Sender:  t.to,
+	}
 }

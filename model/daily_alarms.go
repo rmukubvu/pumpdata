@@ -8,10 +8,11 @@ import (
 )
 
 type DailyAlarms struct {
-	Id           int    `json:"id,omitempty" db:"id"`
-	SerialNumber string `json:"serial_number,omitempty" db:"serial_number"`
-	TypeId       int    `json:"type_id,omitempty" db:"type_id"`
-	CreatedDate  int    `json:"created_date,omitempty" db:"created_date"`
+	Id           int       `json:"id,omitempty" db:"id"`
+	SerialNumber string    `json:"serial_number,omitempty" db:"serial_number"`
+	TypeId       int       `json:"type_id,omitempty" db:"type_id"`
+	CreatedDate  int       `json:"created_date,omitempty" db:"created_date"`
+	UpdatedDate  time.Time `json:"updated_date" db:"updated_date"`
 }
 
 const (
@@ -45,6 +46,7 @@ func (p *DailyAlarms) Key() string {
 
 func (p *DailyAlarms) ToMap() map[string]interface{} {
 	//set the created date time stamp here
+	p.UpdatedDate = time.Now()
 	p.CreatedDate = getDate()
 	b, err := json.Marshal(p)
 	if err != nil {

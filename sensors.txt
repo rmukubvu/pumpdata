@@ -1,15 +1,24 @@
 1:magnetic_pickup:Magnetic:0
-2:namurs_single_pulse_pickup:Namur:0
-3:engine_water_temperature:Eng. Water Temp:0
-4:oil_temperature:Oil Temp:0
-5:block_temperature:Block Temp:0
-6:oil_pressure:Oil Pres:0
-7:fuel_level_primary:Fuel Level A:0
-8:fuel_level_backup:Fuel Level B:0
-9:water_tank_level:Water Tank:80
-10:low_engine_water_level:Low Eng. Water:0
-11:amp_meter_battery_charger:Battery:0
-12:amp_meter_engine_cranking:Cranking:0
-13:ac_volt_meter:AC:0
-14:dc_volt_meter:DC:0
-15:cooling_raw_water_temperature:Cool Water Temp:0
+2:namurs_single_pulse_pickup_A:Namur A:0
+3:namurs_single_pulse_pickup_B:Namur B:0
+4:engine_water_temperature:Eng. Water Temp:0
+5:oil_temperature:Oil Temp:0
+6:block_temperature:Block Temp:0
+7:oil_pressure:Oil Pres:0
+8:fuel_level_primary:Fuel Level A:0
+9:fuel_level_backup:Fuel Level B:0
+10:water_tank_level_A:Water Tank A:0
+11:water_tank_level_B:Water Tank B:0
+12:water_tank_level_C:Water Tank C:0
+13:water_tank_level_D:Water Tank D:0
+14:low_engine_water_level:Low Eng. Water:0
+15:amp_meter_battery_charger_A:Battery Charger A:0
+16:amp_meter_battery_charger_B:Battery Charger B:0
+17:amp_meter_battery_charger_C:Battery Charger C:0
+18:amp_meter_engine_cranking:Cranking:0
+19:ac_volt_meter:AC:0
+20:dc_volt_meter:DC:0
+21:cooling_raw_water_temperature:Cool Water Temp:0
+22:pressure_switch_A:Pressure Switch A:0
+23:pressure_switch_B:Pressure Switch B:0
+24:pressure_switch_C:Pressure Switch C:0

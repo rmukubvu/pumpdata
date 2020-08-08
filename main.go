@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"github.com/gorilla/handlers"
 	"github.com/rmukubvu/pumpdata/controller"
+	"github.com/rmukubvu/pumpdata/rabbit"
+	"github.com/rmukubvu/pumpdata/repository"
 	"github.com/rmukubvu/pumpdata/sensors"
 	"github.com/rmukubvu/pumpdata/store"
 	"google.golang.org/grpc"
@@ -22,11 +24,16 @@ var port = flag.Int("p", store.WebServerPort(), "port number")
 
 func main() {
 	flag.Parse()
-	//r := handles.InitRouter()
-	r := controller.InitRouter()
+	//create server
+	//initiate the rabbit mq
+	rb := rabbit.New(store.RabbitUrlConfig().Url)
+	//tell system we up
+	rb.SystemIs("online")
+	//webapi
+	r := controller.InitRouter(rb)
 	//convert to port format
 	sPort := fmt.Sprintf(":%d", *port)
-	//create server
+	//server
 	srv := &http.Server{
 		Addr: sPort,
 		Handler: handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
@@ -52,8 +59,10 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 	//done
-	log.Println("Shutting down server...")
+	//tell system is down
+	rb.SystemIs("offline")
 
+	log.Println("Shutting down server...")
 	// The context is used to inform the server it has 5 seconds to finish
 	// the request it is currently handling
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -61,7 +70,9 @@ func main() {
 	if err := srv.Shutdown(ctx); err != nil {
 		log.Fatal("Server forced to shutdown:", err)
 	}
-	store.CloseDBConnection()
+	//teardown
+	rb.Close()
+	repository.TearDown()
 	log.Println("Server exiting")
 	//log.Fatal(http.ListenAndServe(sPort, )
 }

@@ -14,7 +14,7 @@ type Server struct {
 }
 
 func (s *Server) SendSensorInformation(ctx context.Context, req *SensorRequest) (*SensorResponse, error) {
-	log.Printf("Receive message from pump with serial - %s", req.SerialNumber)
+	log.Printf("new message from pump with serial - %s", req.SerialNumber)
 	//do the mappings here
 	var msg string
 	sensor, err := buildPumpSensor(req)
@@ -49,7 +49,7 @@ func (s *Server) CreatePump(ctx context.Context, req *PumpRequest) (*PumpRespons
 }
 
 func (s *Server) Ping(ctx context.Context, req *PingRequest) (*PingResponse, error) {
-	log.Printf("Receive message from ping message - %s", req.Data)
+	log.Printf("test ping message - %s", req.Data)
 	return &PingResponse{
 		Data: "PONG",
 	}, nil

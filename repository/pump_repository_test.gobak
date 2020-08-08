@@ -6,6 +6,14 @@ import (
 	"testing"
 )
 
+//do adding to cache9
+	//duration
+	/*layout := "2006-01-02"
+	lastServiceDate, _ := time.Parse(layout, p.LastServiceDate)
+	nextServiceDate, _ := time.Parse(layout, p.NextServiceDate)
+	d := nextServiceDate.Sub(lastServiceDate)*/
+
+
 func TestGetPumpBySerialNumber(t *testing.T) {
 	type args struct {
 		serialNumber string

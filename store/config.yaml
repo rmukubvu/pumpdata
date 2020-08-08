@@ -9,4 +9,14 @@ system:
       url: postgresql://%s:%s@%s:%d/%s?sslmode=disable
 webserver:
   port: 8002
-
+twilio:
+  sid:  AC06dc812b689948eff7b484b7ad3a3548
+  token:  e8a031424e593c3451f7022d0122ef8e
+  number: 15045798139
+mongodatabase:
+  uri: mongodb://localhost:27017
+rabbit:
+  url: amqp://guest:P@ssw0rd@localhost:5672/
+sendgrid:
+  api: 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
+  from: robson@stima.co.za

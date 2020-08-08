@@ -2,20 +2,21 @@ package rabbit
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/rmukubvu/pumpdata/model"
 	"github.com/streadway/amqp"
 	"log"
 )
 
 type QueueService struct {
+	session
 	Trigger TriggerMessage
-	R       Rbmq
 }
 
-type Rbmq struct {
-	ch   *amqp.Channel
-	q    amqp.Queue
-	conn *amqp.Connection
+type session struct {
+	*amqp.Channel
+	amqp.Queue
+	*amqp.Connection
 }
 
 type TriggerMessage struct {
@@ -31,16 +32,17 @@ type TriggerMessage struct {
 
 const queueName = "amakhosi.alarms"
 
-func New() *QueueService {
+//xoxb-1215817235969-1200780626695-Me0HuIvp450n52dn1UcFdwEk
+func New(url string) *QueueService {
 	qs := &QueueService{}
 	var err error
-	qs.R.conn, err = amqp.Dial("amqp://guest:guest@localhost:5672/")
+	qs.Connection, err = amqp.Dial(url)
 	failOnError(err, "Failed to connect to RabbitMQ")
 
-	qs.R.ch, err = qs.R.conn.Channel()
+	qs.Channel, err = qs.Connection.Channel()
 	failOnError(err, "Failed to open a channel")
 
-	qs.R.q, err = qs.R.ch.QueueDeclare(
+	qs.Queue, err = qs.Channel.QueueDeclare(
 		queueName, // name
 		false,     // durable
 		false,     // delete when unused
@@ -52,12 +54,33 @@ func New() *QueueService {
 	return qs
 }
 
+func (p *QueueService) SystemIs(message string) error {
+	err := p.Channel.Publish(
+		"",                       // exchange
+		"pump.service.available", // routing key
+		false,                    // mandatory
+		false,                    // immediate
+		amqp.Publishing{
+			ContentType: "text/plain",
+			Body:        []byte(message),
+		})
+	return err
+}
+
+func (p *QueueService) RemoteCalls(r model.Remote) (model.RemoteResponse, error) {
+	message := fmt.Sprintf("bagder|%s|%s\r\n", r.SerialNumber, r.Message)
+	return model.RemoteResponse{
+		SerialNumber: r.SerialNumber,
+		Message:      "queued for processing",
+	}, p.SystemIs(message)
+}
+
 func (p *QueueService) TriggerAlarm() error {
-	err := p.R.ch.Publish(
-		"",         // exchange
-		p.R.q.Name, // routing key
-		false,      // mandatory
-		false,      // immediate
+	err := p.Channel.Publish(
+		"",     // exchange
+		p.Name, // routing key
+		false,  // mandatory
+		false,  // immediate
 		amqp.Publishing{
 			ContentType: "application/json",
 			Body:        []byte(p.ToJson()),
@@ -77,4 +100,12 @@ func failOnError(err error, msg string) {
 	if err != nil {
 		log.Fatalf("%s: %s", msg, err)
 	}
+}
+
+// Close tears the connection down, taking the channel with it.
+func (p *QueueService) Close() error {
+	if p.Connection == nil {
+		return nil
+	}
+	return p.Connection.Close()
 }

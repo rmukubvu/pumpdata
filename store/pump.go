@@ -2,10 +2,27 @@ package store
 
 import (
 	"github.com/rmukubvu/pumpdata/model"
+	"time"
 )
 
 func AddPump(p model.Pump) error {
 	return insert(model.InsertPump, p.ToMap())
+}
+
+func AddPumpService(p model.PumpService) error {
+	return insert(model.InsertPumpService, p.ToMap())
+}
+
+func AddPumpServiceHistory(p model.PumpServiceHistory) error {
+	return insert(model.InsertPumpServiceHistory, p.ToMap())
+}
+
+func AddOrangeNotification(p model.SensorNotifications) error {
+	return insert(model.InsertOrange, p.ToMap())
+}
+
+func AddRedNotification(p model.SensorNotifications) error {
+	return insert(model.InsertRed, p.ToMap())
 }
 
 func AddSensorAlarm(p model.SensorAlarm) error {
@@ -36,6 +53,23 @@ func AddSensorDataRaw(p model.SensorData) error {
 	return insert(model.InsertSensorData, p.ToMap())
 }
 
+func AddPumpTests(p model.PumpTest) error {
+	return insert(model.InsertPumpTest, p.ToMap())
+}
+
+func AddAnnunciator(p model.Annunciator) error {
+	return insert(model.InsertAnnunciator, p.ToMap())
+}
+
+func PumpTestBySerial(serial string) ([]model.PumpTest, error) {
+	var p []model.PumpTest
+	err := db.Select(&p, model.SelectPumpTestWithSerial, serial)
+	if err != nil {
+		return p, err
+	}
+	return p, nil
+}
+
 func SensorByTypeAndId(v model.Sensor) (model.Sensor, error) {
 	p := model.Sensor{}
 	err := db.Get(&p, model.SelectSensorByTypeAndPumpId, v.TypeId, v.PumpId)
@@ -45,9 +79,18 @@ func SensorByTypeAndId(v model.Sensor) (model.Sensor, error) {
 	return p, nil
 }
 
-func SensorDataBySerialNumber(v model.SensorData) ([]model.SensorData, error) {
-	var p []model.SensorData
-	err := db.Select(&p, model.SelectSensorDataBySerialNumber, v.SerialNumber)
+func SensorDataBySerialAndType(typeId int, serial string) ([]model.Sensor, error) {
+	var p []model.Sensor
+	err := db.Select(&p, model.SelectSensorByTypeAndSerial, typeId, serial)
+	if err != nil {
+		return p, err
+	}
+	return p, nil
+}
+
+func SensorViewModelBySerialAndType(typeId int, serial string) ([]model.SensorViewModel, error) {
+	var p []model.SensorViewModel
+	err := db.Select(&p, model.SelectSensorViewModel, serial, typeId)
 	if err != nil {
 		return p, err
 	}
@@ -126,10 +169,78 @@ func PumpsUnderCompany(id int) ([]model.Pump, error) {
 	return p, nil
 }
 
+func PumpService(id string) (model.PumpService, error) {
+	var p model.PumpService
+	err := db.Get(&p, model.SelectPumpServiceWithId, id)
+	if err != nil {
+		return p, err
+	}
+	return p, nil
+}
+
+func PumpServiceHistory(id string) ([]model.PumpServiceHistory, error) {
+	var p []model.PumpServiceHistory
+	var err error
+	if id == "-1" {
+		err = db.Select(&p, model.SelectAllPumpServiceHistory)
+	} else {
+		err = db.Select(&p, model.SelectPumpServiceHistoryWithId, id)
+	}
+	if err != nil {
+		return p, err
+	}
+	return p, nil
+}
+
+func AllPumpsDueForService() ([]model.PumpService, error) {
+	var p []model.PumpService
+	err := db.Select(&p, model.SelectAllPumpServices)
+	if err != nil {
+		return p, err
+	}
+	return p, nil
+}
+
+func AllAnnunciator() ([]model.Annunciator, error) {
+	var p []model.Annunciator
+	err := db.Select(&p, model.SelectAnnunciator)
+	if err != nil {
+		return p, err
+	}
+	return p, nil
+}
+
+func AnnunciatorBySerial(serial string) (model.Annunciator, error) {
+	var p model.Annunciator
+	err := db.Get(&p, model.SelectAnnunciatorBySerial, serial)
+	if err != nil {
+		return p, err
+	}
+	return p, nil
+}
+
 func DailyAlarms() ([]model.DailyAlarms, error) {
 	var p []model.DailyAlarms
 	date := GetCreatedDate()
 	err := db.Select(&p, model.SelectDailyAlarmsByDate, date)
+	if err != nil {
+		return p, err
+	}
+	return p, nil
+}
+
+func GetOrangeNotification(date time.Time) ([]model.SensorNotifications, error) {
+	var p []model.SensorNotifications
+	err := db.Select(&p, model.SelectOrangeByDate, date)
+	if err != nil {
+		return p, err
+	}
+	return p, nil
+}
+
+func GetRedNotification(date time.Time) ([]model.SensorNotifications, error) {
+	var p []model.SensorNotifications
+	err := db.Select(&p, model.SelectRedByDate, date)
 	if err != nil {
 		return p, err
 	}

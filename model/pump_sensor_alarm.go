@@ -11,24 +11,28 @@ type SensorAlarm struct {
 	TypeId       int    `json:"type_id,omitempty" db:"type_id"`
 	MinValue     int    `json:"min_value,omitempty" db:"min_value"`
 	MaxValue     int    `json:"max_value" db:"max_value"`
+	Orange       int    `json:"orange_notification" db:"orange_notification"`
+	Red          int    `json:"red_notification" db:"red_notification"`
 	AlertMessage string `json:"alert_message" db:"alert_message"`
 	CreatedDate  int64  `json:"created_date,omitempty" db:"created_date"`
 }
 
 const (
-	InsertSensorAlarm = `INSERT INTO sensor_alarms (type_id , min_value , max_value , alert_message , created_date)
+	InsertSensorAlarm = `INSERT INTO sensor_alarms (type_id , min_value , max_value , alert_message , orange_notification , red_notification ,  created_date)
 								VALUES
 								(
 									:type_id,
 									:min_value,
 									:max_value , 
 									:alert_message,
+									:orange_notification,
+									:red_notification,
 									:created_date
 								)
 								ON CONFLICT ( type_id )
 									DO
 									UPDATE
-									SET min_value = :min_value , max_value = :max_value , alert_message = :alert_message`
+									SET min_value = :min_value , max_value = :max_value , orange_notification = :orange_notification , red_notification = :red_notification ,  alert_message = :alert_message`
 	SelectAllAlarms = `select * from sensor_alarms order by type_id asc`
 )
 

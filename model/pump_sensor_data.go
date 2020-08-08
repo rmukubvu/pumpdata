@@ -6,13 +6,19 @@ import (
 	"time"
 )
 
+type WaterTankLevels struct {
+	Tanks int          `json:"tanks"`
+	Data  []SensorData `json:"data"`
+}
+
 type SensorData struct {
-	Id           int    `json:"id,omitempty" db:"id"`
-	SerialNumber string `json:"serial_number,omitempty" db:"serial_number"`
-	TypeId       int    `json:"type_id,omitempty" db:"type_id"`
-	TypeText     string `json:"type_text" db:"type_text"`
-	Value        string `json:"s_value" db:"s_value"`
-	UpdateDate   int64  `json:"update_date,omitempty" db:"update_date"`
+	Id           int       `json:"id,omitempty" db:"id"`
+	SerialNumber string    `json:"serial_number,omitempty" db:"serial_number"`
+	TypeId       int       `json:"type_id,omitempty" db:"type_id"`
+	TypeText     string    `json:"type_text" db:"type_text"`
+	Value        string    `json:"s_value" db:"s_value"`
+	UpdateDate   int64     `json:"update_date,omitempty" db:"update_date"`
+	CreatedDate  time.Time `json:"created_date,omitempty" db:"created_date"`
 }
 
 type SensorWithAlarms struct {
@@ -21,20 +27,20 @@ type SensorWithAlarms struct {
 }
 
 const (
-	InsertSensorData = `INSERT INTO sensor_data (serial_number, type_id , s_value , type_text , update_date)
+	InsertSensorData = `INSERT INTO sensor_data (serial_number, type_id , s_value , type_text , update_date , created_date)
 						VALUES
 						(
 							:serial_number,
 							:type_id,
 							:s_value , 
 							:type_text,
-							:update_date
+							:update_date,
+							:created_date
 						)
 						ON CONFLICT (serial_number, type_id )
 							DO
 								UPDATE
 						SET s_value = :s_value , update_date = :update_date , type_text = :type_text`
-	SelectSensorDataBySerialNumber      = `select serial_number,type_id,type_text,s_value,update_date from sensor_data where serial_number = $1`
 	SelectSensorDataBySerialNumberAndId = `select serial_number,type_id,type_text,s_value,update_date from sensor_data where serial_number = $1 and type_id = $2`
 	SelectAllSensorData                 = `select * from sensor_data`
 )
@@ -59,6 +65,8 @@ func (p *SensorData) Key() string {
 func (p *SensorData) ToMap() map[string]interface{} {
 	//set the created date time stamp here
 	p.UpdateDate = time.Now().Unix()
+	p.CreatedDate = time.Now()
+	//sorted
 	b, err := json.Marshal(p)
 	if err != nil {
 		return nil

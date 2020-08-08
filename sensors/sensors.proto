@@ -22,6 +22,11 @@ message PumpRequest {
     string lon = 3;
 }
 
+message RemoteRequest {
+    string serialNumber = 1;
+    string message = 2;
+}
+
 message PumpResponse {
     string message = 1;
 }
@@ -36,4 +41,8 @@ message PingRequest {
 
 message PingResponse {
     string data = 1;
+}
+
+message RemoteResponse {
+  string message = 1;
 }
