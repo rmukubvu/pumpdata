@@ -3,7 +3,7 @@ package notifications
 import "github.com/bluele/slack"
 
 const (
-	token       = "xoxb-1215817235969-1200780626695-Me0HuIvp450n52dn1UcFdwEk"
+	token       = ""
 	channelName = "amakosi-ops"
 )
 
