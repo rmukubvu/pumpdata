@@ -1,0 +1,186 @@
+[
+  {
+    "internalIdentifier": 50422,
+    "orderNo": "3429767",
+    "version": 150,
+    "orderCurrency": "EUR",
+    "material": {
+      "snr": "6893024",
+      "ai": 1,
+      "plant": "MSF"
+    },
+    "changeDate": "2020-02-21 18:21",
+    "supplierNo": "12086811",
+    "orderState": "OPENED",
+    "orderType": "SERIES",
+    "quantityUnit": "PIECE",
+    "priceUnit": "ONE",
+    "pricingPeriods": [
+      {
+        "internalIdentifier": 50428,
+        "basePrice": {
+          "currency": "EUR",
+          "value": 283.09
+        },
+        "nettPrice": {
+          "currency": "EUR",
+          "value": 308.37
+        },
+        "validity": {
+          "fromDate": "2018-10-01",
+          "toDate": "2018-12-31"
+        },
+        "surcharges": [
+          {
+            "internalIdentifier": 50429,
+            "amount": {
+              "currency": "EUR",
+              "value": 0.00
+            },
+            "category": "RSS",
+            "surchargeType": "SO32"
+          }
+        ],
+        "orderState": "OPENED",
+        "weightings": []
+      },
+      {
+        "internalIdentifier": 50427,
+        "basePrice": {
+          "currency": "EUR",
+          "value": 283.09
+        },
+        "nettPrice": {
+          "currency": "EUR",
+          "value": 308.26
+        },
+        "validity": {
+          "fromDate": "2018-04-01",
+          "toDate": "2018-06-30"
+        },
+        "surcharges": [],
+        "orderState": "OPENED",
+        "weightings": []
+      },
+      {
+        "internalIdentifier": 50424,
+        "basePrice": {
+          "currency": "EUR",
+          "value": 283.09
+        },
+        "nettPrice": {
+          "currency": "EUR",
+          "value": 308.69
+        },
+        "validity": {
+          "fromDate": "2018-07-01",
+          "toDate": "2018-09-30"
+        },
+        "surcharges": [
+          {
+            "internalIdentifier": 50426,
+            "amount": {
+              "currency": "EUR",
+              "value": 0.00
+            },
+            "category": "RSS",
+            "surchargeType": "SO32"
+          },
+          {
+            "internalIdentifier": 50425,
+            "amount": {
+              "currency": "EUR",
+              "value": 4.24
+            },
+            "category": "RSS",
+            "surchargeType": "SO34"
+          }
+        ],
+        "orderState": "OPENED",
+        "weightings": []
+      },
+      {
+        "internalIdentifier": 50430,
+        "basePrice": {
+          "currency": "EUR",
+          "value": 274.52
+        },
+        "nettPrice": {
+          "currency": "EUR",
+          "value": 297.71
+        },
+        "validity": {
+          "fromDate": "2017-12-01",
+          "toDate": "2017-12-31"
+        },
+        "surcharges": [
+          {
+            "internalIdentifier": 50431,
+            "amount": {
+              "currency": "EUR",
+              "value": 6.85
+            },
+            "category": "MTZ",
+            "surchargeType": "A013"
+          },
+          {
+            "internalIdentifier": 50433,
+            "amount": {
+              "currency": "EUR",
+              "value": 4.40
+            },
+            "category": "MTZ",
+            "surchargeType": "CUCA"
+          },
+          {
+            "internalIdentifier": 50434,
+            "amount": {
+              "currency": "EUR",
+              "value": 4.33
+            },
+            "category": "RSS",
+            "surchargeType": "SO32"
+          },
+          {
+            "internalIdentifier": 50432,
+            "amount": {
+              "currency": "EUR",
+              "value": 1.83
+            },
+            "category": "MTZ",
+            "surchargeType": "SRZS"
+          },
+          {
+            "internalIdentifier": 50435,
+            "amount": {
+              "currency": "EUR",
+              "value": 5.78
+            },
+            "category": "RSS",
+            "surchargeType": "ST05"
+          }
+        ],
+        "orderState": "OPENED",
+        "weightings": []
+      },
+      {
+        "internalIdentifier": 50423,
+        "basePrice": {
+          "currency": "EUR",
+          "value": 274.52
+        },
+        "nettPrice": {
+          "currency": "EUR",
+          "value": 293.38
+        },
+        "validity": {
+          "fromDate": "2018-01-01",
+          "toDate": "2018-03-31"
+        },
+        "surcharges": [],
+        "orderState": "OPENED",
+        "weightings": []
+      }
+    ]
+  }
+]
